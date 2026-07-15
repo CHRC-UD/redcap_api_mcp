@@ -74,6 +74,43 @@ redcap-mcp configure claude-code
 
 Each command creates a backup before changing the app's configuration. Quit and reopen the chat app after running it. You do not normally need to run `redcap-mcp serve` yourself—the app starts it when needed.
 
+### Using the newer Claude connector screens
+
+This project is a **local MCP server**: it runs on your own computer and connects directly to your REDCap site. It is not a web address that you paste into Claude's **Add custom connector** screen.
+
+For **Claude Desktop**, use the `redcap-mcp configure claude-desktop` command above. Then completely quit and reopen Claude Desktop. The server should be available when you start a new chat.
+
+For **Claude Code**, use `redcap-mcp configure claude-code`, then start a new Claude Code session from the same computer.
+
+If you are using Claude in a web browser, Claude Cowork, or a screen that asks for a connector URL, this local-only version cannot be added there. Those screens use a remote MCP server that is publicly reachable from Anthropic's cloud. Do not paste your REDCap API URL or token into that screen. Use Claude Desktop or Claude Code for this project instead.
+
+## Generic instructions: add this MCP server to another supported app
+
+Most desktop AI apps that support **local MCP servers** ask for a command and optional arguments. First install and set up this project as described above. Then add a new local/stdio MCP server with:
+
+| Setting | Mac | Windows |
+| --- | --- | --- |
+| Name | `redcap-api` | `redcap-api` |
+| Command | `/full/path/to/redcap_api_mcp/.venv/bin/redcap-mcp` | `C:\full\path\to\redcap_api_mcp\.venv\Scripts\redcap-mcp.exe` |
+| Arguments | `serve` | `serve` |
+
+Replace the example path with the actual folder where you downloaded the repository. Do not put your REDCap API URL or token in the app's MCP settings—the `redcap-mcp setup` command already stored them safely on your computer.
+
+If the app asks you to edit a JSON configuration file instead, use this pattern and replace the command path:
+
+```json
+{
+  "mcpServers": {
+    "redcap-api": {
+      "command": "/full/path/to/redcap_api_mcp/.venv/bin/redcap-mcp",
+      "args": ["serve"]
+    }
+  }
+}
+```
+
+Save the file and restart the app. If the app offers only an MCP **URL**, it supports remote MCP servers only and cannot use this local version.
+
 ## Everyday use
 
 Ask your chat app questions such as “What forms are in this REDCap project?”, “Find fields related to age,” “Show up to 20 records with age and visit date,” or “Summarize the age field.” The app can only use the configured profiles and the read-only tools supplied by this server.
