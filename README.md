@@ -74,15 +74,26 @@ redcap-mcp configure claude-code
 
 Each command creates a backup before changing the app's configuration. Quit and reopen the chat app after running it. You do not normally need to run `redcap-mcp serve` yourself—the app starts it when needed.
 
-### Using the newer Claude connector screens
+### Claude Science (recommended for scientific work)
 
-This project is a **local MCP server**: it runs on your own computer and connects directly to your REDCap site. It is not a web address that you paste into Claude's **Add custom connector** screen.
+Claude Science supports this project as a **Local command** connector. First complete `redcap-mcp setup` in Terminal, as described above. Then, in the Claude Science app:
 
-For **Claude Desktop**, use the `redcap-mcp configure claude-desktop` command above. Then completely quit and reopen Claude Desktop. The server should be available when you start a new chat.
+1. Open **Settings** → **Connectors** → **Add connector**.
+2. Choose **Local command** (not Remote).
+3. Enter the name `redcap-api`.
+4. For **Command**, enter the command for your computer:
 
-For **Claude Code**, use `redcap-mcp configure claude-code`, then start a new Claude Code session from the same computer.
+   - Mac: `/full/path/to/redcap_api_mcp/.venv/bin/redcap-mcp`
+   - Linux: `/full/path/to/redcap_api_mcp/.venv/bin/redcap-mcp`
 
-If you are using Claude in a web browser, Claude Cowork, or a screen that asks for a connector URL, this local-only version cannot be added there. Those screens use a remote MCP server that is publicly reachable from Anthropic's cloud. Do not paste your REDCap API URL or token into that screen. Use Claude Desktop or Claude Code for this project instead.
+5. Open **Advanced settings**. For **Arguments**, add `serve`. Do not add an API token, REDCap URL, or any environment variables.
+6. Select **Add connector**. Leave every tool set to **Ask each time** unless your organization has approved a different setting.
+
+Replace `/full/path/to` with the folder where you downloaded this repository. For example, if it is in your home folder, the Mac command could be `/Users/your-name/redcap_api_mcp/.venv/bin/redcap-mcp`.
+
+This is a local connector: it runs on your computer and connects directly to your REDCap site. Do not choose **Remote** or paste your REDCap URL/token into the connector screen.
+
+For **Claude Desktop**, use the `redcap-mcp configure claude-desktop` command above. For **Claude Code**, use `redcap-mcp configure claude-code`.
 
 ## Generic instructions: add this MCP server to another supported app
 
