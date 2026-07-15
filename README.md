@@ -76,20 +76,20 @@ Each command creates a backup before changing the app's configuration. Quit and 
 
 ### Claude Science (recommended for scientific work)
 
-Claude Science supports this project as a **Local command** connector. First complete `redcap-mcp setup` in Terminal, as described above. Then, in the Claude Science app:
+Claude Science supports this project as a **Local command** connector. The installation includes a small `redcap-mcp` launcher in this repository's top-level folder, so you do not need to point Claude Science inside `.venv`. First complete `redcap-mcp setup` in Terminal, as described above. Then, in the Claude Science app:
 
 1. Open **Settings** → **Connectors** → **Add connector**.
 2. Choose **Local command** (not Remote).
 3. Enter the name `redcap-api`.
 4. For **Command**, enter the command for your computer:
 
-   - Mac: `/full/path/to/redcap_api_mcp/.venv/bin/redcap-mcp`
-   - Linux: `/full/path/to/redcap_api_mcp/.venv/bin/redcap-mcp`
+   - Mac: `/full/path/to/redcap_api_mcp/redcap-mcp`
+   - Linux: `/full/path/to/redcap_api_mcp/redcap-mcp`
 
 5. Open **Advanced settings**. For **Arguments**, add `serve`. Do not add an API token, REDCap URL, or any environment variables.
 6. Select **Add connector**. Leave every tool set to **Ask each time** unless your organization has approved a different setting.
 
-Replace `/full/path/to` with the folder where you downloaded this repository. For example, if it is in your home folder, the Mac command could be `/Users/your-name/redcap_api_mcp/.venv/bin/redcap-mcp`.
+Replace `/full/path/to` with the folder where you downloaded this repository. For example, the command for a repository in `/Users/gkeane/redcap_api_mcp` is `/Users/gkeane/redcap_api_mcp/redcap-mcp`.
 
 This is a local connector: it runs on your computer and connects directly to your REDCap site. Do not choose **Remote** or paste your REDCap URL/token into the connector screen.
 
@@ -101,6 +101,8 @@ Claude Science runs local connectors in a sandbox. Before adding the connector, 
 
 Next, remove the failed connector and add it again using the exact command path from that granted folder. If you then see a request to reach `redcap.chrc.udel.edu`, approve that specific host. Do not approve unrelated hosts. Claude Science will not be able to start a local command outside its permitted folders or contact a network host until you approve it.
 
+If Claude Science says the root `redcap-mcp` file is not executable, open Terminal in the repository folder and run `chmod +x redcap-mcp` once.
+
 ## Generic instructions: add this MCP server to another supported app
 
 Most desktop AI apps that support **local MCP servers** ask for a command and optional arguments. First install and set up this project as described above. Then add a new local/stdio MCP server with:
@@ -108,7 +110,7 @@ Most desktop AI apps that support **local MCP servers** ask for a command and op
 | Setting | Mac | Windows |
 | --- | --- | --- |
 | Name | `redcap-api` | `redcap-api` |
-| Command | `/full/path/to/redcap_api_mcp/.venv/bin/redcap-mcp` | `C:\full\path\to\redcap_api_mcp\.venv\Scripts\redcap-mcp.exe` |
+| Command | `/full/path/to/redcap_api_mcp/redcap-mcp` | `C:\full\path\to\redcap_api_mcp\.venv\Scripts\redcap-mcp.exe` |
 | Arguments | `serve` | `serve` |
 
 Replace the example path with the actual folder where you downloaded the repository. Do not put your REDCap API URL or token in the app's MCP settings—the `redcap-mcp setup` command already stored them safely on your computer.
@@ -119,7 +121,7 @@ If the app asks you to edit a JSON configuration file instead, use this pattern 
 {
   "mcpServers": {
     "redcap-api": {
-      "command": "/full/path/to/redcap_api_mcp/.venv/bin/redcap-mcp",
+      "command": "/full/path/to/redcap_api_mcp/redcap-mcp",
       "args": ["serve"]
     }
   }

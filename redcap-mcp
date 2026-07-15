@@ -1,0 +1,14 @@
+#!/bin/sh
+# Local launcher for Claude Science and other MCP clients.
+# Keep this file in the repository root; it uses the project's private venv.
+set -eu
+
+root=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+python="$root/.venv/bin/python"
+
+if [ ! -x "$python" ]; then
+    echo "REDCap MCP is not installed yet. In this folder, run: python3 -m venv .venv && .venv/bin/python -m pip install ." >&2
+    exit 1
+fi
+
+exec "$python" -m redcap_mcp.cli "$@"
