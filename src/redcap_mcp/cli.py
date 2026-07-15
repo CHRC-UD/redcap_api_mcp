@@ -53,7 +53,9 @@ def _parser() -> argparse.ArgumentParser:
 def _validated_profile(name: str, url: str, ca_bundle: str | None) -> Profile:
     if not name.replace("-", "").replace("_", "").isalnum():
         raise RedcapMcpError("Profile name may contain letters, numbers, hyphens, and underscores.")
-    return Profile(name=name, api_url=url.rstrip("/"), ca_bundle=ca_bundle)
+    # REDCap commonly redirects `/api` to `/api/`. Store the canonical form so
+    # first-time setup does not make an unnecessary redirect request.
+    return Profile(name=name, api_url=url.strip().rstrip("/") + "/", ca_bundle=ca_bundle)
 
 
 async def _check(profile: Profile, token: str) -> str:

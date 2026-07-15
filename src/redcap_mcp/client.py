@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import csv
 import io
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 from .errors import ApiError, ConfigurationError
 from .models import Profile
@@ -45,9 +45,7 @@ class RedcapClient:
 
     async def _post(self, data: dict[str, object]) -> str:
         if self._client is not None:
-            response = await self._client.post(
-                self.profile.api_url, data=data, follow_redirects=False
-            )
+            response = await self._post_with_safe_redirects(self._client, data)
             return self._response_text(response)
         if httpx is None:
             raise ConfigurationError("The httpx dependency is not installed.")
@@ -55,7 +53,7 @@ class RedcapClient:
         async with httpx.AsyncClient(verify=verify, timeout=30, follow_redirects=False) as client:
             for attempt in range(3):
                 try:
-                    response = await client.post(self.profile.api_url, data=data)
+                    response = await self._post_with_safe_redirects(client, data)
                     if response.status_code in {429, 500, 502, 503, 504} and attempt < 2:
                         await asyncio.sleep(0.5 * (2**attempt))
                         continue
@@ -68,11 +66,34 @@ class RedcapClient:
                     raise ApiError("Could not securely reach the REDCap API.") from exc
         raise ApiError("REDCap request failed.")
 
+    async def _post_with_safe_redirects(self, client: object, data: dict[str, object]) -> object:
+        """Repeat a POST only for a same-origin redirect; never leak a token elsewhere."""
+        url = self.profile.api_url
+        for _ in range(3):
+            response = await client.post(url, data=data, follow_redirects=False)
+            if not 300 <= response.status_code < 400:
+                return response
+            location = response.headers.get("location")
+            if not location:
+                raise ApiError("REDCap returned a redirect without a destination.")
+            destination = urljoin(url, location)
+            if not self._same_origin(url, destination):
+                raise ApiError(
+                    "REDCap redirected to a different origin, which was rejected for safety."
+                )
+            url = destination
+        raise ApiError("REDCap returned too many redirects.")
+
+    @staticmethod
+    def _same_origin(first: str, second: str) -> bool:
+        left, right = urlparse(first), urlparse(second)
+        return (left.scheme, left.hostname, left.port) == (right.scheme, right.hostname, right.port)
+
     @staticmethod
     def _response_text(response: object) -> str:
         status = response.status_code
         if 300 <= status < 400:
-            raise ApiError("REDCap returned a redirect, which was rejected for safety.")
+            raise ApiError("REDCap returned too many redirects.")
         if status >= 400:
             raise ApiError("REDCap rejected the request; check API access and permissions.")
         text = response.text
