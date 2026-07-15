@@ -95,6 +95,12 @@ This is a local connector: it runs on your computer and connects directly to you
 
 For **Claude Desktop**, use the `redcap-mcp configure claude-desktop` command above. For **Claude Code**, use `redcap-mcp configure claude-code`.
 
+#### Claude Science troubleshooting: “Operation not permitted”
+
+Claude Science runs local connectors in a sandbox. Before adding the connector, open or create the Claude Science project where you will use REDCap and grant it **Read-only** access to the folder that contains this repository (for example, `/Users/your-name/redcap_api_mcp`). You can do this by typing the folder path in the chat or selecting it with the **@** folder picker, then approving the folder-access card.
+
+Next, remove the failed connector and add it again using the exact command path from that granted folder. If you then see a request to reach `redcap.chrc.udel.edu`, approve that specific host. Do not approve unrelated hosts. Claude Science will not be able to start a local command outside its permitted folders or contact a network host until you approve it.
+
 ## Generic instructions: add this MCP server to another supported app
 
 Most desktop AI apps that support **local MCP servers** ask for a command and optional arguments. First install and set up this project as described above. Then add a new local/stdio MCP server with:
